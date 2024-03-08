@@ -29,7 +29,8 @@ public class PlayerController : MonoBehaviour
 
     void OnJump()
     {
-        // TODO only allow jump if play is on the floor
-        rb.AddForce(new Vector3(0, jumpForce, 0), ForceMode.Impulse);
+        // Only allow jumps if we are not in the air
+        if (rb.velocity.y == 0)
+            rb.AddForce(new Vector3(0, jumpForce, 0), ForceMode.Impulse);
     }
 }
