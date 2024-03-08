@@ -23,11 +23,13 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        rb.velocity = new Vector3(0, gravity, moveSpeed);
+        // rb.velocity = new Vector3(0, gravity, moveSpeed);
+        rb.velocity = new Vector3(0, rb.velocity.y, moveSpeed);
     }
 
     void OnJump()
     {
+        // TODO only allow jump if play is on the floor
         rb.AddForce(new Vector3(0, jumpForce, 0), ForceMode.Impulse);
     }
 }
