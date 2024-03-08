@@ -7,7 +7,7 @@ public class PlayerController : MonoBehaviour
     private Rigidbody rb;
     public float moveSpeed;
     public float jumpForce;
-    public float gravity;
+    public bool isGrounded;
 
     // Start is called before the first frame update
     void Start()
@@ -24,13 +24,26 @@ public class PlayerController : MonoBehaviour
     private void FixedUpdate()
     {
         // rb.velocity = new Vector3(0, gravity, moveSpeed);
-        rb.velocity = new Vector3(0, rb.velocity.y, moveSpeed);
+
+        if (!isGrounded)
+            rb.velocity = new Vector3(0, rb.velocity.y, moveSpeed);
+
+        if (rb.velocity.y < 0)
+            rb.AddForce(new Vector3(0, -0.2f, 0), ForceMode.Impulse);
+
+        isGrounded = false; //Important to reset the isGrounded after to false
     }
 
     void OnJump()
     {
         // Only allow jumps if we are not in the air
-        if (rb.velocity.y == 0)
+        // if (rb.velocity.y == 0)
+        if (isGrounded)
             rb.AddForce(new Vector3(0, jumpForce, 0), ForceMode.Impulse);
+    }
+
+    void OnCollisionStay()
+    {
+        isGrounded = true;
     }
 }
