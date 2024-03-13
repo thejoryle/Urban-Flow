@@ -66,6 +66,20 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.transform.CompareTag("Obstacle"))
+        {
+            GameOver();
+        }
+    }
+
+    void GameOver()
+    {
+        Time.timeScale = .01f;
+        GameObject.Find("Game Over Screen").GetComponent<Canvas>().enabled = true;
+    }
+
     void RandomizeJumpAnimation()
     {
         int choice = Random.Range(0, 3);
