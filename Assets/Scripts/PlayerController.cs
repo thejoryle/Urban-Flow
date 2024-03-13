@@ -10,6 +10,7 @@ public class PlayerController : MonoBehaviour
     [Header("Movement Vars")]
     public float moveSpeed;
     public float jumpForce;
+    public float extraGravity;
     public bool isGrounded;
 
     // vars to enable randomized jump animation
@@ -34,7 +35,7 @@ public class PlayerController : MonoBehaviour
             rb.velocity = new Vector3(0, rb.velocity.y, moveSpeed);
 
             if (rb.velocity.y < 0)
-                rb.AddForce(new Vector3(0, -0.2f, 0), ForceMode.Impulse);
+                rb.AddForce(new Vector3(0, extraGravity, 0), ForceMode.Impulse);
         }
         else
         {
