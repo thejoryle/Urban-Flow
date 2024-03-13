@@ -11,9 +11,6 @@ public class PlayerController : MonoBehaviour
     public float moveSpeed;
     public float jumpForce;
     public bool isGrounded;
-    public float velX;
-    public float velY;
-    public float velZ;
 
     // vars to enable randomized jump animation
     private enum JumpVersion
@@ -21,19 +18,13 @@ public class PlayerController : MonoBehaviour
         jump0, jump1, jump2, none
     }
     private JumpVersion jumpVersion;
+    private float jumpForceModifier; // used to equalize elevation of each jump animation
+
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         animator = GetComponent<Animator>();
-    }
-
-    void Update()
-    {
-        Debug.Log(isGrounded);
-        velX = rb.velocity.x;
-        velY = rb.velocity.y;
-        velZ = rb.velocity.z;
     }
 
     private void FixedUpdate()
@@ -56,12 +47,11 @@ public class PlayerController : MonoBehaviour
         // Only allow jumps if we are not in the air
         if (isGrounded)
         {
-            Debug.Log("Jumping");
             isGrounded = false;
-            transform.position += new Vector3(0, .1f, 0);
-            rb.AddForce(new Vector3(0, jumpForce, 0), ForceMode.Impulse);
+            transform.position += new Vector3(0, .1f, 0); // gets player unstuck from ground
             animator.SetBool("isGrounded", false);
             RandomizeJumpAnimation();
+            rb.AddForce(new Vector3(0, jumpForce * jumpForceModifier, 0), ForceMode.Impulse);           
         }
     }
 
@@ -83,13 +73,19 @@ public class PlayerController : MonoBehaviour
         switch (choice)
         {
             case 0:
+                // straight leg flip
                 animator.SetBool("isJumping0", true);
+                jumpForceModifier = 1.1f;
                 break;
             case 1:
+                // hurdle jump
                 animator.SetBool("isJumping1", true);
+                jumpForceModifier = 1.1f;
                 break;
             case 2:
+                // twist flip
                 animator.SetBool("isJumping2", true);
+                jumpForceModifier = 0.75f;
                 break;
         }
     }
@@ -99,16 +95,20 @@ public class PlayerController : MonoBehaviour
         switch ((int)jumpVersion)
         {
             case 0:
+                // straight leg flip
                 animator.SetBool("isJumping0", false);
                 break;
             case 1:
+                // hurdle jump
                 animator.SetBool("isJumping1", false);
                 break;
             case 2:
+                // twist flip
                 animator.SetBool("isJumping2", false);
                 break;
         }
         // set jump version to "none"
         jumpVersion = (JumpVersion) 3;
+        jumpForceModifier = 1;
     }
 }
