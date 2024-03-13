@@ -30,6 +30,7 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        Debug.Log(isGrounded);
         velX = rb.velocity.x;
         velY = rb.velocity.y;
         velZ = rb.velocity.z;
@@ -37,8 +38,6 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        // rb.velocity = new Vector3(0, gravity, moveSpeed);
-
         if (!isGrounded)
         {
             rb.velocity = new Vector3(0, rb.velocity.y, moveSpeed);
@@ -57,7 +56,9 @@ public class PlayerController : MonoBehaviour
         // Only allow jumps if we are not in the air
         if (isGrounded)
         {
+            Debug.Log("Jumping");
             isGrounded = false;
+            transform.position += new Vector3(0, .1f, 0);
             rb.AddForce(new Vector3(0, jumpForce, 0), ForceMode.Impulse);
             animator.SetBool("isGrounded", false);
             RandomizeJumpAnimation();
@@ -66,9 +67,12 @@ public class PlayerController : MonoBehaviour
 
     void OnCollisionStay()
     {
-        isGrounded = true;
-        animator.SetBool("isGrounded", true);
-        EndJumpAnimation();
+        if(rb.velocity.y <= 0)
+        {
+            isGrounded = true;
+            animator.SetBool("isGrounded", true);
+            EndJumpAnimation();
+        }
     }
 
     void RandomizeJumpAnimation()
