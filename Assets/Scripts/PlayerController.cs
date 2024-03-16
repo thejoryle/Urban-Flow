@@ -11,6 +11,7 @@ public class PlayerController : MonoBehaviour
     public float moveSpeed;
     public float jumpForce;
     public float extraGravity;
+    public float crashFallSpeed;
     public bool isGrounded;
 
     // vars to enable randomized jump animation
@@ -74,10 +75,27 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    private void OnCollisionExit()
+    {
+        isGrounded = false;
+    }
+
+    private void OnTriggerEnter()
+    {
+        GameOver();
+    }
+
     void GameOver()
     {
         Time.timeScale = .01f;
         GameObject.Find("Game Over Screen").GetComponent<Canvas>().enabled = true;
+    }
+
+    public IEnumerator Crash()
+    {
+        animator.SetBool("crashed", true);
+        yield return new WaitForSeconds(.5f);
+        rb.velocity = new Vector3(0, crashFallSpeed, 0);
     }
 
     void RandomizeJumpAnimation()
@@ -100,7 +118,7 @@ public class PlayerController : MonoBehaviour
             case 2:
                 // twist flip
                 animator.SetBool("isJumping2", true);
-                jumpForceModifier = 0.75f;
+                jumpForceModifier = 1.1f;
                 break;
         }
     }
