@@ -4,15 +4,17 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    private Rigidbody rb;
-    private Animator animator;
+    public Rigidbody rb;
+    public Animator animator;
 
     [Header("Movement Vars")]
     public float moveSpeed;
     public float jumpForce;
     public float extraGravity;
+    public float crashKnockBack;
     public float crashFallSpeed;
     public bool isGrounded;
+    public bool crashed = false;
 
     // vars to enable randomized jump animation
     private enum JumpVersion
@@ -29,16 +31,21 @@ public class PlayerController : MonoBehaviour
         animator = GetComponent<Animator>();
     }
 
+    private void Update()
+    {
+        
+    }
+
     private void FixedUpdate()
     {
-        if (!isGrounded)
+        if (!isGrounded && !crashed)
         {
             rb.velocity = new Vector3(0, rb.velocity.y, moveSpeed);
 
             if (rb.velocity.y < 0)
                 rb.AddForce(new Vector3(0, extraGravity, 0), ForceMode.Impulse);
         }
-        else
+        else if (isGrounded && !crashed)
         {
             rb.velocity = new Vector3(0, 0, moveSpeed);
         }
@@ -57,15 +64,14 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    void OnCollisionStay()
+    public IEnumerator Crash()
     {
-        if(rb.velocity.y <= 0)
-        {
-            isGrounded = true;
-            animator.SetBool("isGrounded", true);
-            EndJumpAnimation();
-        }
+        animator.SetBool("crashed", true);
+        rb.AddForce(new Vector3(0, 0, crashKnockBack), ForceMode.Impulse);
+        yield return new WaitForSeconds(.5f);
+        rb.velocity = new Vector3(0, crashFallSpeed, 0);
     }
+
 
     private void OnCollisionEnter(Collision collision)
     {
@@ -87,18 +93,11 @@ public class PlayerController : MonoBehaviour
 
     void GameOver()
     {
-        Time.timeScale = .01f;
+        Time.timeScale = .0001f;
         GameObject.Find("Game Over Screen").GetComponent<Canvas>().enabled = true;
     }
 
-    public IEnumerator Crash()
-    {
-        animator.SetBool("crashed", true);
-        yield return new WaitForSeconds(.5f);
-        rb.velocity = new Vector3(0, crashFallSpeed, 0);
-    }
-
-    void RandomizeJumpAnimation()
+    public void RandomizeJumpAnimation()
     {
         int choice = Random.Range(0, 3);
         jumpVersion = (JumpVersion) choice;
@@ -123,7 +122,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    void EndJumpAnimation()
+    public void EndJumpAnimation()
     {
         switch ((int)jumpVersion)
         {
