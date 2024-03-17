@@ -16,6 +16,8 @@ public class PlayerController : MonoBehaviour
     public bool isGrounded;
     public bool crashed = false;
 
+    public SFXManager sfx;
+
     // vars to enable randomized jump animation
     private enum JumpVersion
     {
@@ -29,11 +31,6 @@ public class PlayerController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         animator = GetComponent<Animator>();
-    }
-
-    private void Update()
-    {
-        
     }
 
     private void FixedUpdate()
@@ -59,6 +56,7 @@ public class PlayerController : MonoBehaviour
             isGrounded = false;
             transform.position += new Vector3(0, .1f, 0); // gets player unstuck from ground
             animator.SetBool("isGrounded", false);
+            sfx.PlayRandomJump();
             RandomizeJumpAnimation();
             rb.AddForce(new Vector3(0, jumpForce * jumpForceModifier, 0), ForceMode.Impulse);           
         }
@@ -67,12 +65,14 @@ public class PlayerController : MonoBehaviour
     public IEnumerator Crash()
     {
         animator.SetBool("crashed", true);
+        sfx.PlayRandomMetalBang();
         rb.AddForce(new Vector3(0, 0, crashKnockBack), ForceMode.Impulse);
         yield return new WaitForSeconds(.5f);
+        sfx.PlayFall();
         rb.velocity = new Vector3(0, crashFallSpeed, 0);
     }
 
-
+    // any contact with obstacles
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.transform.CompareTag("Obstacle"))
@@ -81,11 +81,13 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    // when leaving any surface
     private void OnCollisionExit()
     {
         isGrounded = false;
     }
 
+    // only triggers are game over triggers when falling
     private void OnTriggerEnter()
     {
         GameOver();
