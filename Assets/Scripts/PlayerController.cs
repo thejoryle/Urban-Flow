@@ -87,16 +87,30 @@ public class PlayerController : MonoBehaviour
         isGrounded = false;
     }
 
-    // only triggers are game over triggers when falling
-    private void OnTriggerEnter()
+    // only triggers are game over and finish line
+    private void OnTriggerEnter(Collider collision)
     {
-        GameOver();
+        if (collision.transform.CompareTag("finish line"))
+        {
+            GameWin();
+        }
+        else
+        {
+            GameOver();
+        }
     }
 
     void GameOver()
     {
         Time.timeScale = .0001f;
         GameObject.Find("Game Over Screen").GetComponent<Canvas>().enabled = true;
+    }
+
+    void GameWin()
+    {
+        Time.timeScale = .0001f;
+        sfx.PlayWin();
+        GameObject.Find("Win Screen").GetComponent<Canvas>().enabled = true;
     }
 
     public void RandomizeJumpAnimation()

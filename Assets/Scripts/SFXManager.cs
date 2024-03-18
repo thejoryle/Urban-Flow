@@ -10,6 +10,7 @@ public class SFXManager : MonoBehaviour
     public AudioSource metalBang0;
     public AudioSource metalBang1;
     public AudioSource fall;
+    public AudioSource win;
 
     public void PlayRandomJump()
     {
@@ -35,5 +36,10 @@ public class SFXManager : MonoBehaviour
     public void PlayFall()
     {
         fall.Play();
+    }
+
+    public void PlayWin()
+    {
+        win.Play();
     }
 }
